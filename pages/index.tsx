@@ -1,6 +1,8 @@
 import Layout from "../components/layout"
+import { useSession } from "next-auth/react"
 
 export default function IndexPage() {
+  
   return (
     <Layout>
       <h1>NextAuth.js Example</h1>
@@ -11,3 +13,5 @@ export default function IndexPage() {
     </Layout>
   )
 }
+
+
