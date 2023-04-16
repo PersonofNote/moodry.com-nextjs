@@ -1,0 +1,84 @@
+.content {
+    min-height: 60vh;
+}
+
+.ad {
+    width: 100%;
+    padding: 0;
+    min-height: 100px;
+    padding-top: 2rem;
+    text-align: center;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 750px;
+    margin: auto;
+    height: 300px;
+    justify-content: space-evenly;
+}
+
+.moods-list {
+    list-style: none;
+    padding: 12px;
+}
+
+
+.moodContainerAms {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-bottom: 1px solid gray;
+    justify-content: space-around;
+}
+
+.chart-container {
+    border: 1px dotted gray;
+    width: 100%;
+    height: 400px;
+    max-height: 400px;
+    margin: auto;
+}
+
+
+.tooltip-ams {
+    background-color: rgba(255,255,255,0.8);
+    width: 300px;
+    font-size: 22px;
+}
+
+.module-card-ams {
+    width: 95%;
+    padding: 12px;
+    margin: auto;
+    border-radius: 24px;
+    background-color: #1982C4;
+}
+
+.line-chart-container {
+    width: 100%;
+    height: 400px;
+}
+
+@media screen and (min-width: 735px) {
+    .content {
+        width: 80%;
+        margin: auto;
+    }
+    
+    .ad {
+        max-width: 20%;
+        padding-top: 250px;
+        border-left: 1px dashed slategray;
+        padding: 2rem;
+    }
+
+    .chart-container {
+        max-width: 500px;
+    }
+
+    .box-item-ams {
+        padding: 8px;
+    }
+}

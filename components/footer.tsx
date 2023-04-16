@@ -19,9 +19,6 @@ export default function Footer() {
         <li className={styles.navItem}>
           <Link href="/policy">Policy</Link>
         </li>
-        <li className={styles.navItem}>
-          <em>next-auth@{packageJSON.dependencies["next-auth"]}</em>
-        </li>
       </ul>
     </footer>
   )

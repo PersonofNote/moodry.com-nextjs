@@ -12,9 +12,8 @@
   opacity: 1;
   overflow: hidden;
   border-radius: 0 0 0.6rem 0.6rem;
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 0 1rem 1rem;
   margin: 0;
-  background-color: rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease-in;
 }
 
@@ -84,9 +83,11 @@
   margin-bottom: 2rem;
   padding: 0;
   list-style: none;
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
 }
 
 .navItem {
-  display: inline-block;
   margin-right: 1rem;
 }
