@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { format, subDays, isAfter, isBefore, parseISO  } from 'date-fns';
-import styles from './charts.module.scss';
+import styles from './charts.module.css';
 
 const timeFrames = [{name: 'all', val: null}, {name : "day", val: 1}, {name: "week", val: 7}, {name: "month", val: 30}, {name: "year", val: 365}]
 const now = new Date();

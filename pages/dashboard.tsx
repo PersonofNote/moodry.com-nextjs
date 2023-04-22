@@ -15,7 +15,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import  styles from './styles/dashboard.module.css';
-import formStyles from './styles/forms.module.scss';
+import formStyles from './styles/forms.module.css';
 
 // TODO: Manually get the user data and extract this out into another file so can import in different places. Its' confused by the User model
 interface MoodData {

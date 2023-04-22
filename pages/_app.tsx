@@ -1,6 +1,6 @@
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from 'next-themes'
-import "./styles/styles.scss"
+import "./styles/styles.css"
 
 import type { AppProps } from "next/app"
 import type { Session } from "next-auth"

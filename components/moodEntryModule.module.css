@@ -24,17 +24,19 @@
     display: flex;
     justify-content: center;
     transition: all 200ms;
-    &:hover {
+}
 
-    }
-    &:active {
-        border: 3px dotted white;
-    }
+.icon-button:hover {
 
-    svg {
-        height: 80%;
-        width: 80%;
-    }
+}
+
+.icon-button:active {
+    border: 3px dotted white;
+}
+
+.icon-button svg {
+    height: 80%;
+    width: 80%;
 }
 
 .active {

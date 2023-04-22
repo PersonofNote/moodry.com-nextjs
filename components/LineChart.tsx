@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import { moodColors } from '../constants'
 // import '../styles/line-chart.css';
 import { useWindowSize } from '../hooks/useWindowSize';
-import styles from './charts.module.scss';
+import styles from './charts.module.css';
 
 
 const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");

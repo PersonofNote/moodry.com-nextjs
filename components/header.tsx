@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from "next/link"
 import { signIn, signOut, useSession } from "next-auth/react"
-import styles from "./header.module.scss"
+import styles from "./header.module.css"
 import { IoSettingsSharp } from "react-icons/io5"
 import { GiHamburgerMenu } from "react-icons/gi";
 

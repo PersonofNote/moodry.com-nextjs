@@ -8,7 +8,7 @@ import { MdDelete } from 'react-icons/md';
 import { IoIosAdd } from 'react-icons/io';
 import LineChart from '../components/LineChart';
 import DateFilter from '../components/dateFilters';
-import styles from '../components/charts.module.scss'
+import styles from '../components/charts.module.css'
 
 
 export default function ChartsPage({user}) {

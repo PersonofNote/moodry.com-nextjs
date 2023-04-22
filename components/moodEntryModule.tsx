@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { FaSmile } from "react-icons/fa";
 import { FaMeh } from "react-icons/fa";
 import { FaFrown } from "react-icons/fa";
-import styles from './moodEntryModule.module.scss'
-import formStyles from '../pages/styles/forms.module.scss'
+import styles from './moodEntryModule.module.css'
+import formStyles from '../pages/styles/forms.module.css'
 
 import Loader from './loader'
 
@@ -71,6 +71,7 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
                 value={3}
                 onClick={handleClick}>
                 <FaSmile
+                    size={40}
                     strokeWidth={2}
                     style={{ fill: '#ACD8AA'}}
                 />
@@ -81,6 +82,7 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
                 value={2}
                 onClick={handleClick}>
                 <FaMeh
+                    size={40}
                     strokeWidth={2}
                     style={{ fill: '#FFA666' }}
                 />
@@ -91,6 +93,7 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
                 value={1}
                 onClick={handleClick}>
                 <FaFrown
+                    size={40}
                     style={{ fill: '#FF7171' }}
                 />
             </button>
