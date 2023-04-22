@@ -13,7 +13,7 @@ export default async function getUsers(req: import('next').NextApiRequest, res: 
 
     console.log('Finding User');
     const users = await User.find();
-    console.log('CREATED DOCUMENT');
+    console.log('FOUND USER');
 
     res.json(JSON.parse(JSON.stringify(users)));
   } catch (error) {

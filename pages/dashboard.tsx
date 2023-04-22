@@ -9,45 +9,123 @@ import { IoIosAdd } from 'react-icons/io';
 import { format } from 'date-fns';
 import { moodTextMapping, moodColors, moodIconMapping } from '../constants'
 import MoodEntryModule from '../components/moodEntryModule';
+import Loader from '../components/loader';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 import  styles from './styles/dashboard.module.css';
 import formStyles from './styles/forms.module.scss';
 
-export default function Dashboard({user}) {
+// TODO: Manually get the user data and extract this out into another file so can import in different places. Its' confused by the User model
+interface MoodData {
+    _id: string;
+    value: number;
+    note: string;
+    createdAt: string;
+  }
 
-  const { data } = useSession() 
-
-  const [moods, setMoods] = useState([]);
-  const [loading, setLoading] = useState(true);
+  interface UserData {
+    user_id: string;
+    email: string;
+  }
   
+  interface MoodList {
+    [key: string]: MoodData;
+  }
+  
+  interface DashboardProps {
+    user: UserData;
+  }
+
+export default function Dashboard({ user }: DashboardProps) {
+  const { data } = useSession();
+
+  const [moods, setMoods] = useState<MoodList>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [note, setNote] = useState<string>('');
+
+  const [startDate, setStartDate] = useState(new Date("2014/02/08"));
+  const [endDate, setEndDate] = useState(new Date("2014/02/10"))
+
   const fetchMoods = useCallback(async () => {
     setLoading(true);
     try {
-        fetch(`/api/moods/${user.user_id}`)
+      fetch(`/api/moods/${user.user_id}`)
         .then(response => response.json())
         .then(res => {
-            console.log(res)
-            setMoods(res)
-            setLoading(false)
-
+          console.log(res)
+          setMoods(res)
+          setLoading(false)
         })
     }
     catch (error) {
-        console.log('error', error);
+      console.log('error', error);
     }
-}, [])
+  }, [user.user_id])
 
-  useEffect(() => {
-    fetchMoods();
-  },[]);
+  const addNote = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (note) {
+      setLoading(true)
+      const noteValue = {
+        _id: e.currentTarget.value,
+        note: note
+      }
+      try {
+        const requestOptions = {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(noteValue)
+        };
+        fetch(`/api/moods/update-mood/${e.currentTarget.value}`, requestOptions)
+          .then(response => response.json())
+          .then(res => {
+            fetchMoods();
+          })
+        setLoading(false)
+      }
+      catch (error) {
+        console.log('error', error);
+      }
+    }
+  }
+
+  const handleDeleteMood = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      const moodData = {
+        _id: e.currentTarget.value,
+      }
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moodData)
+      };
+      console.log(requestOptions)
+      fetch(`/api/moods/update-mood/${e.currentTarget.value}`, requestOptions)
+        .then(response => response.json())
+        .then(res => {
+          console.log(res)
+          fetchMoods();
+        })
+    }
+    catch (error) {
+      console.log('error', error);
+    }
+    }
+
+    useEffect(() => {
+        fetchMoods();
+    }, [fetchMoods]);
+
+    if (!data) return null
+    
 
   
   if (!data) return null
 
-  const renderMoods = (moodsList) => {
+  const renderMoods = (moodsList: MoodList) => {
     const moodsArray = Object.keys(moodsList).reverse().map((key, index) => {
         const { _id, value, note, createdAt } = moodsList[key];
-        // const Icon = moodIconMapping[value]
         const date = createdAt ? format(new Date(createdAt), 'MM/dd h:m aaaa') : "Unknown date";
         return(
             <li key={`${index}`} className={styles.moodContainerAms} >
@@ -61,12 +139,21 @@ export default function Dashboard({user}) {
                     {note ? <div style={{paddingLeft: `1rem`}}>{note}</div> : 
                     <div>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                        <input className={formStyles.formField}
-                            placeholder={"Enter Note (Optional)"}
-                            name="note"
-                            autoComplete="off"
-                        />
-                        <button style={{background: 'none', display: 'flex', alignItems: 'center', padding: '0.5rem', fontSize: '32px'}} value={_id} >
+                    <input
+                        className={formStyles.formField}
+                        onChange={e => setNote(e.target.value)}
+                        
+                        placeholder={"Enter Note (Optional)"}
+                        name="note"
+                        autoComplete='off'
+                    />
+                        <button style={{background: 'none', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        padding: '0.5rem', 
+                                        fontSize: '32px'}} 
+                                value={_id}
+                                onClick={addNote} >
                            +
                         </button>
                     </div>
@@ -74,7 +161,7 @@ export default function Dashboard({user}) {
                     } 
                     </div> 
                 <div className='div-item-ams'> 
-                    <button className='icon-button'  value={_id}>
+                    <button className='icon-button' value={_id} onClick={handleDeleteMood}>
                         <MdDelete width='100%' height='100%'/>
                     </button> 
                 </div>
@@ -87,12 +174,31 @@ export default function Dashboard({user}) {
 
   return (
     <Layout>
-      {loading && <p>Loading...</p>}
-      <MoodEntryModule user={user} loading={loading} setLoading={setLoading} fetchMoods={fetchMoods} setMoods={setMoods}/>
-      <ul role="list" className={'undeeorated-list-ams'}>
-        {renderMoods(moods)}
-      </ul>
+        <MoodEntryModule user={user} loading={loading} setLoading={setLoading} fetchMoods={fetchMoods} setMoods={setMoods}/>
+        {/*
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+          />
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate}
+          />
+      */}
+        {loading ? <Loader/>: (
+        <ul role="list" className={'undeeorated-list-ams'}>
+            {renderMoods(moods)}
+        </ul>
+        )}
     </Layout>
+      
   )
 }
 
@@ -104,7 +210,7 @@ export async function getServerSideProps(context: any) {
   if (!session) {
     return {
       redirect: {
-        destination: '/dashboard/auth/login',
+        destination: '/',
         permanent: false
       },
     }

@@ -1,0 +1,20 @@
+.line-chart-container {
+    position: relative;
+    margin-top: 24px;
+}
+
+.tooltip {
+    position: absolute;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.d3-line-chart {
+
+    height: 350px;
+}

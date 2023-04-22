@@ -1,16 +1,12 @@
 import Layout from "../components/layout"
 import { useSession } from "next-auth/react"
 
-export default function IndexPage() {
+export default function CalendarPage() {
   
   return (
     <Layout>
-      <h1>Moodry</h1>
-      <p>
-        This site is a work in progress
-      </p>
+      <h1> Calendar</h1>
+      <p> Coming soon <small>(geologically speaking)</small> </p>
     </Layout>
   )
 }
-
-

@@ -1,13 +1,15 @@
+import { useState } from 'react';
 import Link from "next/link"
 import { signIn, signOut, useSession } from "next-auth/react"
-import styles from "./header.module.css"
+import styles from "./header.module.scss"
 import { IoSettingsSharp } from "react-icons/io5"
+import { GiHamburgerMenu } from "react-icons/gi";
 
-// The approach used in this component shows how to build a sign in and sign out
-// component that works on pages which support both client and server side
-// rendering, and avoids any flash incorrect content on initial page load.
+
+
 export default function Header() {
   const { data: session, status } = useSession()
+  const [ menuOpen, setMenuOpen ] = useState(false)
 
   const loading = status === "loading"
 
@@ -25,9 +27,6 @@ export default function Header() {
         >
           {!session && (
             <>
-              <span className={styles.notSignedInText}>
-                You are not signed in
-              </span>
               <a
                 href={`/api/auth/signin`}
                 className={styles.buttonPrimary}
@@ -40,45 +39,47 @@ export default function Header() {
               </a>
             </>
           )}
-          {session?.user && (
-            <>
-              {session.user.image && (
-                <span
-                  style={{ backgroundImage: `url('${session.user.image}')` }}
-                  className={styles.avatar}
-                />
-              )}
-              <span className={styles.signedInText}>
-                <small>Signed in as</small>
-                <br />
-                <strong>{session.user.email ?? session.user.name}</strong>
-              </span>
-            </>
-          )}
         </p>
       </div>
-        <ul className={styles.navItems}>
-          <li className={styles.navItem}>
-            <Link href="/">Home</Link>
-          </li>
-          <li className={styles.navItem}>
-            <Link href="/dashboard">Moods</Link>
-          </li>
-          <li className={styles.navItem}>
-            <Link href="/dashboard">Charts</Link>
-          </li>
-        </ul>
       {session?.user && (
-         <a
-         href={`/api/auth/signout`}
-         className={styles.button}
-         onClick={(e) => {
-           e.preventDefault()
-           signOut()
-         }}
-       >
-         Sign out
-       </a>
+        <div className={styles.navBarFlex}>
+          <ul className={styles.navItems}>
+            <li className={styles.navItem}>
+              <Link href="/">Home</Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link href="/dashboard">Moods</Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link href="/charts">Charts</Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link href="/calendar">Calendar</Link>
+            </li>
+          </ul>
+          <div className={styles.menuWrapper}>
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            <GiHamburgerMenu  />
+          </button>
+            <ul className={styles.hamburgerMenu + (menuOpen ? styles.open : '')}>
+              <li >
+                <Link href="/settings"><IoSettingsSharp size={'32px'}/></Link>
+              </li>
+              <li>
+                <a
+                href={`/api/auth/signin`}
+                className={styles.button}
+                onClick={(e) => {
+                  e.preventDefault()
+                  signOut()
+                }}
+              >
+                Sign out
+              </a>
+            </li>
+          </ul>
+        </div>
+        </div>
       )}
       </nav>
     </header>

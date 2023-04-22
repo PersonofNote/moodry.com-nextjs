@@ -35,7 +35,7 @@ $gray: #9b9b9b;
   top: 0;
   display: block;
   transition: 0.2s;
-  color: $gray;
+  color: var(--font-color);
 }
 
 .formField:focus {
@@ -54,7 +54,7 @@ $gray: #9b9b9b;
   border-image-slice: 1;
 }
 /* reset input */
-.forField{
+.formField{
   &:required,&:invalid { box-shadow:none; }
 }
 
