@@ -11,4 +11,7 @@ module.exports = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  // Using a nextconfig overrides the nextauth?
+  env: { NEXTAUTH_URL: "https://remarkable-blini-49bf7c.netlify.app/" },
+
 }
