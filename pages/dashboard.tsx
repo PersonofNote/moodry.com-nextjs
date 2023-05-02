@@ -11,9 +11,9 @@ import { moodTextMapping, moodColors, moodIconMapping } from '../constants'
 import MoodEntryModule from '../components/moodEntryModule';
 import Loader from '../components/loader';
 import DatePicker from "react-datepicker";
+import { isBefore, isAfter, addDays, subDays, parseISO, endOfDay, startOfDay } from 'date-fns'
 
 import "react-datepicker/dist/react-datepicker.css";
-
 import  styles from './styles/dashboard.module.css';
 import formStyles from './styles/forms.module.css';
 
@@ -42,11 +42,20 @@ export default function Dashboard({ user }: DashboardProps) {
   const { data } = useSession();
 
   const [moods, setMoods] = useState<MoodList>({});
+  const [filteredMoods, setFilteredMoods] = useState<MoodList>({})
   const [loading, setLoading] = useState<boolean>(true);
   const [note, setNote] = useState<string>('');
 
-  const [startDate, setStartDate] = useState(new Date("2014/02/08"));
-  const [endDate, setEndDate] = useState(new Date("2014/02/10"))
+  const [startDate, setStartDate] = useState(new Date("2020/04/01"));
+  const [endDate, setEndDate] = useState(new Date())
+
+  useEffect(() => {
+    const filtered = Object.values(moods).filter((mood) => {
+      const date = parseISO(mood.createdAt);
+      return isBefore(date, endOfDay(endDate)) && isAfter(date, startOfDay(startDate));
+    })
+    setFilteredMoods(filtered)
+  }, [startDate, endDate]);
 
   const fetchMoods = useCallback(async () => {
     setLoading(true);
@@ -54,8 +63,9 @@ export default function Dashboard({ user }: DashboardProps) {
       fetch(`/api/moods/${user.user_id}`)
         .then(response => response.json())
         .then(res => {
-          console.log(res)
           setMoods(res)
+          // Todo: right now this will unset the filtering on delete and note add
+          setFilteredMoods(res)
           setLoading(false)
         })
     }
@@ -124,7 +134,11 @@ export default function Dashboard({ user }: DashboardProps) {
   if (!data) return null
 
   const renderMoods = (moodsList: MoodList) => {
-    const moodsArray = Object.keys(moodsList).reverse().map((key, index) => {
+    const data = Object.keys(moodsList);
+    if (data.length < 1) {
+      return (<div>No moods for the dates selected; pick a different date range or add some data</div>)
+    }
+    const moodsArray = data.reverse().map((key, index) => {
         const { _id, value, note, createdAt } = moodsList[key];
         const date = createdAt ? format(new Date(createdAt), 'MM/dd h:m aaaa') : "Unknown date";
         return(
@@ -175,8 +189,9 @@ export default function Dashboard({ user }: DashboardProps) {
   return (
     <Layout>
         <MoodEntryModule user={user} loading={loading} setLoading={setLoading} fetchMoods={fetchMoods} setMoods={setMoods}/>
-        {/*
+        <div style={{display: 'flex', flexDirection: 'row', padding: '1rem 0'}}>
           <DatePicker
+            className='date-picker-input'
             selected={startDate}
             onChange={(date) => setStartDate(date)}
             selectsStart
@@ -184,6 +199,7 @@ export default function Dashboard({ user }: DashboardProps) {
             endDate={endDate}
           />
           <DatePicker
+            className="date-picker-input"
             selected={endDate}
             onChange={(date) => setEndDate(date)}
             selectsEnd
@@ -191,10 +207,10 @@ export default function Dashboard({ user }: DashboardProps) {
             endDate={endDate}
             minDate={startDate}
           />
-      */}
+        </div>
         {loading ? <Loader/>: (
         <ul role="list" className={'undeeorated-list-ams'}>
-            {renderMoods(moods)}
+            {renderMoods(filteredMoods)}
         </ul>
         )}
     </Layout>
@@ -219,7 +235,7 @@ export async function getServerSideProps(context: any) {
   await connectMongo();
   
   const userData = await User.findOne({
-      email: session.user.email
+      email: session.user?.email
       })
 
   const user = JSON.parse(JSON.stringify(userData))

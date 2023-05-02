@@ -123,6 +123,13 @@
   color: var(--font-color);
 }
 
+.date-picker-input {
+  height: 32px;
+  font-size: 1rem;
+  background-color: "red";
+  border: 12px solid black;
+}
+
 @media only screen and (min-width: 640px) {
   .rad-label {
     flex-direction: row;

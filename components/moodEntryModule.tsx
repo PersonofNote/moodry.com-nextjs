@@ -11,7 +11,7 @@ import Loader from './loader'
 const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) => {
 
     const initialMoodState = {
-        value: null,
+        value: 0,
         note: '',
         user_id: user?.user_id
     }
@@ -28,7 +28,7 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
     }
 
     const handleSubmit = async (e) => {
-        if (!moodValue.value) {
+        if (!moodValue.value || moodValue.value < 1) {
             setError('Please select a face')
             return
         }
