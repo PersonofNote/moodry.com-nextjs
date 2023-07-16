@@ -9,7 +9,7 @@ import styles from './charts.module.css';
 
 const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
-const getDates = (data) => {
+const getDates = (data: any) => {
     return data.map(d => parseDate(d.createdAt))
 }
 
@@ -18,6 +18,7 @@ const D3LineChart = ({data, dateRange}) => {
     const { wWidth } = useWindowSize();
     const d3Container = useRef(null);
     const [Tooltip, setTooltip] = useState(null);
+    const [showDots, setShowDots] = useState(false);
 
     const margin = wWidth < 750 ? {top: 10, right: 30, bottom: 30, left: 30} : {top: 10, right: 30, bottom: 30, left: 60};
     const width = wWidth - margin.left - margin.right;
@@ -76,7 +77,7 @@ const D3LineChart = ({data, dateRange}) => {
 
             const tickNum = wWidth < 750 ? 3 : 10;
             const fontSize = wWidth < 750 ? 18 : 20;
-            const dotSize = wWidth < 750 ? 15 : 7;
+            const dotSize = showDots ? wWidth < 750 ? 15 : 7 : 0;
 
             d3.select('#line-chart-svg').selectAll('*').remove();
             
@@ -173,9 +174,10 @@ const D3LineChart = ({data, dateRange}) => {
             svg.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", 'aliceblue')
+            .attr("stroke", 'blue')
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
+            .curve(d3.curveNatural)
             .x((d) => xScale(parseDate(d.createdAt))) 
             .y((d) => yScale(d.value)) 
             )
@@ -210,6 +212,7 @@ const D3LineChart = ({data, dateRange}) => {
                 height='100%'
                 ref={d3Container}
             />
+            <button onClick={()=> setShowDots(!showDots)}>Toggle Dots</button>
             <div id='tooltip'></div>
         </>
     );
