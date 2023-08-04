@@ -1,6 +1,8 @@
 .line-chart-container {
     position: relative;
     margin-top: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 .tooltip {
@@ -15,6 +17,6 @@
 }
 
 .d3-line-chart {
-
-    height: 350px;
+    flex: 1;
+    height: 100%;
 }

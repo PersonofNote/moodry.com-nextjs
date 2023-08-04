@@ -10,6 +10,9 @@ import LineChart from '../components/LineChart';
 import DateFilter from '../components/dateFilters';
 import styles from '../components/charts.module.css'
 
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
 
 export default function ChartsPage({user}) {
     const [loading, setLoading] = useState(false);
@@ -21,6 +24,7 @@ export default function ChartsPage({user}) {
     const [moods, setMoods] = useState(null);
     const [filteredMoods, setFilteredMoods] = useState(moods);
 
+    // TODO: extract this into a reusable hook. Or convert to ServerSide Props rendering
     const fetchMoods = useCallback(async () => {
         setLoading(true);
         try {
@@ -38,18 +42,22 @@ export default function ChartsPage({user}) {
 
 
     useEffect(() => {
+      setLoading(true);
         fetchMoods();
         // Initial load
         setFilteredMoods(moods);
+        setLoading(false)
     },[]);
 
    
   return (
     <Layout>
-      <div className={styles['line-chart-container']}>
-        <DateFilter data={moods} setDateRange={setDateRange} setFilteredData={setFilteredMoods}/>
-        <LineChart data={filteredMoods} dateRange={dateRange} />
-      </div>
+      {loading ? <Skeleton /> : (
+        <div className={styles['line-chart-container']}>
+          <DateFilter data={moods} setDateRange={setDateRange} setFilteredData={setFilteredMoods}/>
+          <LineChart data={filteredMoods} dateRange={dateRange} />
+        </div>
+      )}
     </Layout>
   )
 }

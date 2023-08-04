@@ -7,11 +7,13 @@ import { useWindowSize } from '../hooks/useWindowSize';
 import styles from './charts.module.css';
 
 
+import { isBefore, isAfter, addDays, subDays, parseISO, endOfDay, startOfDay } from 'date-fns'
 const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
 const getDates = (data: any) => {
     return data.map(d => parseDate(d.createdAt))
 }
+
 
 const D3LineChart = ({data, dateRange}) => {
 
@@ -20,14 +22,16 @@ const D3LineChart = ({data, dateRange}) => {
     const [Tooltip, setTooltip] = useState(null);
     const [showDots, setShowDots] = useState(false);
 
-    const margin = wWidth < 750 ? {top: 10, right: 30, bottom: 30, left: 30} : {top: 10, right: 30, bottom: 30, left: 60};
-    const width = wWidth - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const margin = wWidth < 750 ? {top: 10, right: 30, bottom: 30, left: 30} : {top: 50, right: 30, bottom: 30, left: 0};
+    const width = wWidth;
+    //const height = 400 - margin.top - margin.bottom;
+    const height = wWidth >= 750 ? 600 : 400
+    //const containerHeight = wWidth >= 750 ? 600 : 400;
 
     const tooltipContent = (val) => {
         const date = parseDate(val.createdAt)
         const formatDate = d3.timeFormat('%d-%m-%y at %H:%m')
-        const note = val.note || 'NO NOTE DATA'
+        const note = val.note || '<i>No note</i>'
         return (
         `   
             <svg width="10" height="10">
@@ -100,11 +104,16 @@ const D3LineChart = ({data, dateRange}) => {
             const svg = d3.select(d3Container.current)
             .append("svg")
                 .attr('id', 'line-chart')
+                .attr("height", "100%")
+                .attr("width", "100%")
+                .attr("viewBox", `0  ${-margin.top + margin.bottom} ${height + margin.top + margin.bottom} ${width + margin.left}`)
+                //.attr("height", height - (margin.top + margin.bottom))
                 //.attr("width", 'width + margin.left + margin.right')
-                .attr("height", height + margin.top + margin.bottom)
+                // .attr("height", height + margin.top + margin.bottom)
                 // At larger sizes we need 0 0 1500 560... check on this
-                .attr("viewBox", `${margin.right} ${-margin.top} ${width} 560`)
+                // .attr("viewBox", `${margin.right} ${-margin.top} ${width} 560`)
             .append("g")
+                
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
@@ -120,6 +129,7 @@ const D3LineChart = ({data, dateRange}) => {
             .attr('opacity', 0.2)
             .call(yAxisGrid);
 
+            // Add X axis
             var x = d3.scaleTime()
             .domain(domain)
             .range([ 0, width ])
@@ -174,10 +184,9 @@ const D3LineChart = ({data, dateRange}) => {
             svg.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", 'blue')
+            .attr("stroke", 'lightblue')
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
-            .curve(d3.curveNatural)
             .x((d) => xScale(parseDate(d.createdAt))) 
             .y((d) => yScale(d.value)) 
             )
@@ -198,10 +207,10 @@ const D3LineChart = ({data, dateRange}) => {
 
             d3.selectAll('text')
             .attr('font-size', fontSize)
-            .attr("transform", "translate(-10,0)rotate(-45)")
+            //.attr("transform", "translate(-10,0)rotate(-45)")
         }
 
-        },[data, d3Container.current])
+        },[data, d3Container.current, showDots])
 
     return (
         <>
@@ -209,7 +218,7 @@ const D3LineChart = ({data, dateRange}) => {
                 id="line-chart-svg"
                 className={styles['d3-line-chart']}
                 width='100%'
-                height='100%'
+                height={`${height}px`}
                 ref={d3Container}
             />
             <button onClick={()=> setShowDots(!showDots)}>Toggle Dots</button>

@@ -1,21 +1,32 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useSession, getSession } from "next-auth/react";
-import Layout from "../components/layout";
 import connectMongo from '../lib/connectMongo';
 import { User } from '../models/user.model';
 import { Mood } from '../models/mood.model';
-import { MdDelete } from 'react-icons/md';
 import { IoIosAdd } from 'react-icons/io';
+
+// DATE FUNCTIONS
 import { format } from 'date-fns';
-import { moodTextMapping, moodColors, moodIconMapping } from '../constants'
+import { isBefore, isAfter, addDays, subDays, parseISO, endOfDay, startOfDay } from 'date-fns'
+
+// COMPONENTS
+import Layout from "../components/layout";
 import MoodEntryModule from '../components/moodEntryModule';
 import Loader from '../components/loader';
 import DatePicker from "react-datepicker";
-import { isBefore, isAfter, addDays, subDays, parseISO, endOfDay, startOfDay } from 'date-fns'
+import Skeleton from 'react-loading-skeleton';
 
+// STYLES
+import 'react-loading-skeleton/dist/skeleton.css';
 import "react-datepicker/dist/react-datepicker.css";
 import  styles from './styles/dashboard.module.css';
 import formStyles from './styles/forms.module.css';
+
+// ICONS AND COLORS
+import { AiOutlinePlus } from 'react-icons/ai';
+import { MdDelete } from 'react-icons/md';
+import { moodTextMapping, moodColors, moodIconMapping } from '../constants'
+
 
 // TODO: Manually get the user data and extract this out into another file so can import in different places. Its' confused by the User model
 interface MoodData {
@@ -110,7 +121,6 @@ export default function Dashboard({ user }: DashboardProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(moodData)
       };
-      console.log(requestOptions)
       fetch(`/api/moods/update-mood/${e.currentTarget.value}`, requestOptions)
         .then(response => response.json())
         .then(res => {
@@ -125,7 +135,7 @@ export default function Dashboard({ user }: DashboardProps) {
 
     useEffect(() => {
         fetchMoods();
-    }, [fetchMoods]);
+    }, []);
 
     if (!data) return null
     
@@ -168,7 +178,7 @@ export default function Dashboard({ user }: DashboardProps) {
                                         fontSize: '32px'}} 
                                 value={_id}
                                 onClick={addNote} >
-                           +
+                           <AiOutlinePlus fill="lightblue" width='100%' height='100%' />
                         </button>
                     </div>
                     </div>
@@ -208,7 +218,7 @@ export default function Dashboard({ user }: DashboardProps) {
             minDate={startDate}
           />
         </div>
-        {loading ? <Loader/>: (
+        {loading ? <Skeleton/>: (
         <ul role="list" className={'undeeorated-list-ams'}>
             {renderMoods(filteredMoods)}
         </ul>
