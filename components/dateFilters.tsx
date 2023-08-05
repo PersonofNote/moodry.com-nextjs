@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { format, subDays, isAfter, isBefore, parseISO  } from 'date-fns';
+import { format, addDays, subDays, isAfter, isBefore, parseISO, endOfDay, startOfDay   } from 'date-fns';
 import styles from './charts.module.css';
 
 const timeFrames = [{name: 'all', val: null}, {name : "day", val: 1}, {name: "week", val: 7}, {name: "month", val: 30}, {name: "year", val: 365}]
@@ -15,10 +15,11 @@ const DateFilters = ({data, setFilteredData, setDateRange}) => {
             const daysAgo = subDays(now, e.target.value)
             const filteredData = data.filter(d => { 
                 const date = parseISO(d.createdAt)
-                return isAfter(date, daysAgo) && isBefore(date, now)
+                //return isAfter(date, daysAgo) && isBefore(date, now)
+                return isAfter(date, startOfDay(daysAgo)) && isBefore(date, endOfDay(now))
             })
             setFilteredData(filteredData);
-            setDateRange({startDate: daysAgo, endDate: now});
+            setDateRange({startDate: daysAgo, endDate: endOfDay(addDays(now, 1))});
         }
     }
     

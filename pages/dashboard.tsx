@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useSession, getSession } from "next-auth/react";
+import { redirect } from 'next/navigation';
 import connectMongo from '../lib/connectMongo';
 import { User } from '../models/user.model';
 import { Mood } from '../models/mood.model';
@@ -50,7 +51,9 @@ interface MoodData {
   }
 
 export default function Dashboard({ user }: DashboardProps) {
+  if (!user) return redirect("api/auth/signin");
 
+  
   const [moods, setMoods] = useState<MoodList>({});
   const [filteredMoods, setFilteredMoods] = useState<MoodList>({})
   const [note, setNote] = useState<string>('');

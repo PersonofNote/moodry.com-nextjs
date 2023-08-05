@@ -59,7 +59,7 @@ export default function ChartsPage({user}) {
           <DateFilter data={moods} setDateRange={setDateRange} setFilteredData={setFilteredMoods}/>
           <LineChart data={filteredMoods} dateRange={dateRange} />
         </div>
-      <h2> For Demo Purposes only</h2>
+      <h2> WIP: For Demo Purposes only</h2>
       <hr />
         <SpiralChart />
     </Layout>

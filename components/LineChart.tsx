@@ -5,8 +5,6 @@ import { moodColors } from '../constants'
 // import '../styles/line-chart.css';
 import { useWindowSize } from '../hooks/useWindowSize';
 import styles from './charts.module.css';
-
-
 import { isBefore, isAfter, addDays, subDays, parseISO, endOfDay, startOfDay } from 'date-fns'
 const parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
@@ -221,7 +219,7 @@ const D3LineChart = ({data, dateRange}) => {
                 height={`${height}px`}
                 ref={d3Container}
             />
-            <button onClick={()=> setShowDots(!showDots)}>Toggle Dots</button>
+            <button style={{maxWidth: '150px'}} onClick={()=> setShowDots(!showDots)}>Toggle Dots</button>
             <div id='tooltip'></div>
         </>
     );

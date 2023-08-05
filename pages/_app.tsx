@@ -23,7 +23,6 @@ export default function App({
   const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState(null);
-  console.log(user)
   const fetchResponse = async (email: string) => {
     const response = await fetch(`/api/users/${email}`);
     if (!response.ok) {
