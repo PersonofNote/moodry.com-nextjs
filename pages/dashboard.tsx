@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import Skeleton from 'react-loading-skeleton';
 
 // STYLES
-import 'react-loading-skeleton/dist/skeleton.css';
+// import 'react-loading-skeleton/dist/skeleton.css';
 import "react-datepicker/dist/react-datepicker.css";
 import  styles from './styles/dashboard.module.css';
 import formStyles from './styles/forms.module.css';
@@ -28,7 +28,7 @@ import { MdDelete } from 'react-icons/md';
 import { moodTextMapping, moodColors, moodIconMapping } from '../constants'
 
 
-// TODO: Manually get the user data and extract this out into another file so can import in different places. Its' confused by the User model
+// TODO: Move the types
 interface MoodData {
     _id: string;
     value: number;
@@ -37,7 +37,7 @@ interface MoodData {
   }
 
   interface UserData {
-    user_id: string;
+    _id: string;
     email: string;
   }
   
@@ -50,11 +50,9 @@ interface MoodData {
   }
 
 export default function Dashboard({ user }: DashboardProps) {
-  const { data } = useSession();
 
   const [moods, setMoods] = useState<MoodList>({});
   const [filteredMoods, setFilteredMoods] = useState<MoodList>({})
-  const [loading, setLoading] = useState<boolean>(true);
   const [note, setNote] = useState<string>('');
 
   const [startDate, setStartDate] = useState(new Date("2020/04/01"));
@@ -68,26 +66,24 @@ export default function Dashboard({ user }: DashboardProps) {
     setFilteredMoods(filtered)
   }, [startDate, endDate]);
 
+  // TODO: Make this better. Probably put it up to the top level and pass it down so you're not constantly calling it
   const fetchMoods = useCallback(async () => {
-    setLoading(true);
     try {
-      fetch(`/api/moods/${user.user_id}`)
+      fetch(`/api/moods/${user._id}`)
         .then(response => response.json())
         .then(res => {
           setMoods(res)
           // Todo: right now this will unset the filtering on delete and note add
           setFilteredMoods(res)
-          setLoading(false)
         })
     }
     catch (error) {
       console.log('error', error);
     }
-  }, [user.user_id])
+  }, [user._id])
 
   const addNote = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (note) {
-      setLoading(true)
       const noteValue = {
         _id: e.currentTarget.value,
         note: note
@@ -103,7 +99,6 @@ export default function Dashboard({ user }: DashboardProps) {
           .then(res => {
             fetchMoods();
           })
-        setLoading(false)
       }
       catch (error) {
         console.log('error', error);
@@ -137,11 +132,11 @@ export default function Dashboard({ user }: DashboardProps) {
         fetchMoods();
     }, []);
 
-    if (!data) return null
+    if (!user) return null
     
 
   
-  if (!data) return null
+  if (!user) return null
 
   const renderMoods = (moodsList: MoodList) => {
     const data = Object.keys(moodsList);
@@ -198,7 +193,7 @@ export default function Dashboard({ user }: DashboardProps) {
 
   return (
     <Layout>
-        <MoodEntryModule user={user} loading={loading} setLoading={setLoading} fetchMoods={fetchMoods} setMoods={setMoods}/>
+        <MoodEntryModule user={user} fetchMoods={fetchMoods} setMoods={setMoods}/>
         <div style={{display: 'flex', flexDirection: 'row', padding: '1rem 0'}}>
           <DatePicker
             className='date-picker-input'
@@ -218,48 +213,10 @@ export default function Dashboard({ user }: DashboardProps) {
             minDate={startDate}
           />
         </div>
-        {loading ? <Skeleton/>: (
         <ul role="list" className={'undeeorated-list-ams'}>
             {renderMoods(filteredMoods)}
         </ul>
-        )}
     </Layout>
       
   )
 }
-
-// TODO: figure out this type
-
-export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false
-      },
-    }
-  }
-
-  await connectMongo();
-  
-  const userData = await User.findOne({
-      email: session.user?.email
-      })
-
-  const user = JSON.parse(JSON.stringify(userData))
-
-  return {
-    props: {
-      test: 'test',
-      user: {
-        user_id: user._id,
-        email: user.email,
-        username: user.username,
-        roles: user.roles.join(", ")
-      }
-    },
-  }
-}
-

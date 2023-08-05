@@ -19,7 +19,7 @@ const D3LineChart = ({data, dateRange}) => {
 
     const { wWidth } = useWindowSize();
     const d3Container = useRef(null);
-    const [Tooltip, setTooltip] = useState(null);
+    const [Tooltip, setTooltip] = useState<d3.Selection<HTMLDivElement, unknown, HTMLElement, any> | null>(null);
     const [showDots, setShowDots] = useState(false);
 
     const margin = wWidth < 750 ? {top: 10, right: 30, bottom: 30, left: 30} : {top: 50, right: 30, bottom: 30, left: 0};

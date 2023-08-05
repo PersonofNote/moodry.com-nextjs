@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
-    wWidth: undefined,
-    wHeight: undefined,
+    // Initialize to mobile size
+    wWidth: 750,
+    wHeight: 750,
   });
   useEffect(() => {
     function handleResize() {

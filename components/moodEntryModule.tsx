@@ -8,12 +8,12 @@ import formStyles from '../pages/styles/forms.module.css'
 import Loader from './loader'
 
 
-const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) => {
-
+const MoodEntryModule = ({ user, fetchMoods, setMoods }) => {
+    const [loading, setLoading ] = useState<boolean>(false);
     const initialMoodState = {
         value: 0,
         note: '',
-        user_id: user?.user_id
+        user_id: user._id
     }
     const [moodValue, setMoodValue] = useState(initialMoodState)
     const [error, setError] = useState(null);
@@ -33,13 +33,16 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
             return
         }
         setLoading(true)
-        try {   
+        try {
+            const user_id = user?._id;   
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(moodValue)
             };
-            fetch(`/api/moods/${user.user_id}`, requestOptions)
+            fetch(`/api/moods/${user_id}`, requestOptions)
+            //.then(response => console.log(response.json()))
+            
             .then(response => response.json())
             .then(res => {
                 console.log("RESPONSE")
@@ -47,6 +50,7 @@ const MoodEntryModule = ({ user, loading, setLoading, fetchMoods, setMoods }) =>
                 setMoodValue(initialMoodState)
                 fetchMoods()
             })
+            
             setLoading(false)
         }
         catch (error) {
