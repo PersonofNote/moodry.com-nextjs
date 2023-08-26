@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import styles from "./header.module.css"
 import { IoSettingsSharp } from "react-icons/io5"
 import { GiHamburgerMenu } from "react-icons/gi";
+import { AiOutlineLogout } from 'react-icons/ai';
 
 
 
@@ -45,9 +46,6 @@ export default function Header() {
         <div className={styles.navBarFlex}>
           <ul className={styles.navItems}>
             <li className={styles.navItem}>
-              <Link href="/">Home</Link>
-            </li>
-            <li className={styles.navItem}>
               <Link href="/dashboard">Moods</Link>
             </li>
             <li className={styles.navItem}>
@@ -63,18 +61,18 @@ export default function Header() {
           </button>
             <ul className={styles.hamburgerMenu + (menuOpen ? styles.open : '')}>
               <li >
-                <Link href="/settings"><IoSettingsSharp size={'32px'}/></Link>
+                <Link href="/settings"><IoSettingsSharp size={'16px'}/> Settings</Link>
               </li>
               <li>
                 <a
                 href={`/api/auth/signin`}
-                className={styles.button}
                 onClick={(e) => {
                   e.preventDefault()
                   signOut()
                 }}
               >
-                Sign out
+                <AiOutlineLogout size={'16px'}/>
+                  Sign out
               </a>
             </li>
           </ul>

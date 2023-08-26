@@ -1,10 +1,11 @@
 /* Set min-height to avoid page reflow while session loading */
+/*
 .signedInStatus {
   display: block;
   min-height: 4rem;
   width: 100%;
 }
-
+*/ 
 .loading,
 .loaded {
   position: relative;
@@ -82,10 +83,12 @@
 .navBarFlex {
   display: flex;
   position: relative;
+  width: 100%;
+  justify-content: space-around;
+  align-content: center;
 }
 
 .navItems {
-  margin-bottom: 2rem;
   padding: 0;
   list-style: none;
   display: flex;
@@ -98,10 +101,12 @@
 }
 
 .menuWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  align-content: center;
+  position: relative;
+}
+
+.menuWrapper button {
+  margin: auto;
+  margin-top: 12px;
 }
 
 .hamburgerMenu {
@@ -122,4 +127,9 @@
   height: "150px";
   background-color: "white";
   color: "#333"
+}
+
+.hamburgerMenu li {
+  margin: auto;
+  text-align: center;
 }
