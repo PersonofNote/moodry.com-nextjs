@@ -2,7 +2,8 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 // Check if Next treeshakes this for you
 import * as d3 from 'd3';
-import { moodColors } from '../constants'
+import { moodColors } from '../constants';
+import { startOfWeek, addWeeks, differenceInWeeks, differenceInCalendarMonths, differenceInCalendarDays } from 'date-fns';
 
 // HOOKS
 import { useWindowSize } from '../hooks/useWindowSize';
@@ -13,14 +14,31 @@ import styles from './charts.module.css';
 
 // TODO: Make these types better
 export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) => {
-
   const spiralContainer = useRef(null);
+  const {wWidth, wHeight} = useWindowSize();
 
-  var width = 500,
+  const getSpiralNumber = () => {
+    const firstDate=new Date(data[0].createdAt);
+    const lastDate=new Date(data[data.length-1].createdAt);
+    const adjustedFirstDate = startOfWeek(firstDate, { weekStartsOn: 0 }); // 0 indicates Sunday
+    const adjustedLastDate = startOfWeek(lastDate, { weekStartsOn: 0 });
+    // Calculate the number of weeks between the adjusted dates
+    return differenceInCalendarMonths(adjustedLastDate, adjustedFirstDate);
+  }
+
+
+  const getDifferenceinDays = () => {
+    // Calculate width based on how many entries are in the total
+    const firstDate=new Date(data[0].createdAt);
+    const lastDate=new Date(data[data.length-1].createdAt);
+    return differenceInCalendarDays(lastDate, firstDate)
+  }
+
+  var width = wWidth,
       height = 500,
       start = 0,
       end = 2.25,
-      numSpirals = 4;
+      numSpirals = getSpiralNumber();
 
     var theta = function(r) {
       return numSpirals * Math.PI * r;
@@ -32,20 +50,17 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
       .domain([start, end])
       .range([40, r]);
 
-
-  useMemo(() => {
-    if (spiralContainer.current) {
-
+    const drawSpiral = (data) => {  if (spiralContainer.current) {
       // If there's a chart, remove it to redraw
       d3.select('#spiral-container-svg').selectAll('*').remove();
 
       const svg = d3.select(spiralContainer.current).append("svg")
       .attr('id', 'spiral-chart')
-      .attr("width", width)
-      .attr("height", height)
+      .attr("width", wWidth)
+      .attr("height", wWidth)
 
-      const group = svg.append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+      const group = svg.append('g')
+      
       var points = d3.range(start, end + 0.001, (end - start) / 1000);
 
       var spiral = d3.lineRadial()
@@ -53,27 +68,27 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
         .angle(theta)
         .radius(radius);
 
-      var path = svg.append("path")
+      var path = group.append("path")
         .datum(points)
         .attr("id", "spiral")
         .attr("d", spiral)
         .style("fill", "none")
-        .style("stroke", "none");
+        .style("stroke", "lightblue");
 
-      // fudge some data, 2 years of data starting today
       var spiralLength = path.node().getTotalLength(),
-          N = 730,
+          N = getDifferenceinDays(),
           barWidth = (spiralLength / N) - 1
+
+      // Data keeps crapping out for some reason unless I make it this way. TODO: figure out why
       var someData = [];
-      for (var i = 0; i < N; i++) {
-        var currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + i);
+
+      for (var i = 0; i < data.length; i ++) {
         someData.push({
-          date: currentDate,
-          value: Math.floor(Math.random() * 3) + 1
+          date: new Date(data[i].createdAt),
+          value: data[i].value
         });
       }
-      
+
       // here's our time scale that'll run along the spiral
       var timeScale = d3.scaleTime()
         .domain(d3.extent(someData, function(d){
@@ -89,7 +104,7 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
         .range([0, (r / numSpirals) - 30]);
 
       // append our rects
-      svg.selectAll("rect")
+      group.selectAll("rect")
         .data(someData)
         .enter()
         .append("rect")
@@ -104,19 +119,19 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
           d.x = posOnLine.x; // x postion on the spiral
           d.y = posOnLine.y; // y position on the spiral
           
-          d.a = (Math.atan2(angleOnLine.y, angleOnLine.x) * 180 / Math.PI) - 90; //angle at the spiral position
+          d.a = (Math.atan2(angleOnLine.y, angleOnLine.x) * 180 / Math.PI) - 80; //angle at the spiral position. originally was 90 but I don't really know why...
 
           return d.x;
         })
         .attr("y", function(d){
           return d.y;
         })
-        .attr("width", 8)
-        .attr("height", 25)
+        .attr("width", barWidth/4)
+        .attr("height", numSpirals*1.4)
         .style("fill", function(d){
           return moodColors[d.value]; // rotate the bar
         })
-        .style("stroke", "none")
+        .style("stroke", 'gray')
         .attr("transform", function(d){
           return "rotate(" + d.a + "," + d.x  + "," + d.y + ")"; // rotate the bar
         });
@@ -124,7 +139,7 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
       // add date labels
       var tF = d3.timeFormat("%b %Y"),
           firstInMonth = {};
-      svg.selectAll("text")
+      group.selectAll("text")
         .data(someData)
         .enter()
         .append("text")
@@ -151,22 +166,29 @@ export const SpiralChart = ({ data, dateRange} : {data?: any, dateRange?: any}) 
           return ((d.linePer / spiralLength) * 100) + "%";
         })
 
-        const test = document.querySelector('#spiral-chart')
-        const {xMin, xMax, yMin, yMax} = useSVGBounds(test);
-        const viewbox = `${xMin} ${yMin} ${xMax - xMin} ${yMax - yMin}`;
-        test.setAttribute('viewBox', viewbox);
+        // TODO: Deal with larger data sets. Will likely need some math based on the spiral length
+        const spiralChart = document.querySelector('#spiral-chart')
+        const {xMin, xMax, yMin, yMax} = useSVGBounds(spiralChart);
+        // const proportion = ((xMax - xMin) / wWidth) * 10;
+        const proportion = (wWidth / (xMax - xMin)) * 0.9
+        const viewbox = `${xMin} ${yMin} ${(xMax - xMin) * proportion } ${(xMax - xMin) * proportion}`;
+        spiralChart?.setAttribute('viewBox', viewbox)
       }
+    }
+  useMemo(() => {
+      drawSpiral(data)
     },[spiralContainer.current, data]);
 
 
     return(
+      data?.length ? (
         <svg
             id="spiral-container-svg"
             className={styles['spiral-container-svg']}
-            width='100%'
-            height="400px"
-            //height={`${height}px`}
+            width="100%"
+            height={wWidth}
             ref={spiralContainer}
         />
+      ) : "no data loaded"
     )
 }

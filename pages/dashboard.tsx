@@ -69,6 +69,7 @@ export default function Dashboard({ user }: DashboardProps) {
     setFilteredMoods(filtered)
   }, [startDate, endDate]);
 
+
   // TODO: Make this better. Probably put it up to the top level and pass it down so you're not constantly calling it
   const fetchMoods = useCallback(async () => {
     try {

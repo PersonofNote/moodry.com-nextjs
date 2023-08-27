@@ -7,7 +7,7 @@ import { User } from '../../../models/user.model';
  */
  export default async function getUserByEmail(req: import('next').NextApiRequest, res: import('next').NextApiResponse) {
     console.log("QUERY")
-    console.log(req.query)
+
   try {
     console.log('CONNECTING TO MONGO');
     await connectMongo();

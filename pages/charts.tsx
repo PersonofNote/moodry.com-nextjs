@@ -23,7 +23,7 @@ import styles from '../components/charts.module.css'
 
 
 export default function ChartsPage({user}) {
-
+    const [loading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState({
         startDate: null,
         endDate: null
@@ -38,6 +38,7 @@ export default function ChartsPage({user}) {
             .then(response => response.json())
             .then(res => {
                 setMoods(res)
+                setLoading(false)
             })
         }
         catch (error) {
@@ -55,13 +56,17 @@ export default function ChartsPage({user}) {
    
   return (
     <Layout>
-        <div className={styles['line-chart-container']}>
-          <DateFilter data={moods} setDateRange={setDateRange} setFilteredData={setFilteredMoods}/>
-          <LineChart data={filteredMoods} dateRange={dateRange} />
-        </div>
-      <h2> WIP: For Demo Purposes only</h2>
-      <hr />
-        <SpiralChart />
+        {loading ? "LOADING" : (
+        <>
+          <div className={styles['line-chart-container']}>
+              <DateFilter data={moods} setDateRange={setDateRange} setFilteredData={setFilteredMoods}/>
+              <LineChart data={filteredMoods} dateRange={dateRange} />
+          
+          </div>
+          <hr />
+            <SpiralChart data={moods} />
+        </>
+        )}
     </Layout>
   )
 }
