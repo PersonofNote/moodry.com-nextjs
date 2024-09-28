@@ -3,7 +3,7 @@ I am building this app for my mother, to track and graph how she's feeling throu
 
 ### Tech Stack
 
-* NextJS (specificaly [Next Auth](https://next-auth.js.org/))
+* NextJS
 * MongoDB
 * D3.js
 
